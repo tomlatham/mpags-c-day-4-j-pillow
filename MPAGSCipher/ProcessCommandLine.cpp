@@ -79,6 +79,30 @@ bool processCommandLine(const std::vector<std::string>& args,
     else if ( args[i] == "--decrypt" ) {
             settings.cipherMode = CipherMode::Decrypt;
     }
+	  
+	else if ( args[i] == "--cipher" ) {
+		// Handle cipher type selection
+		// 
+		if (i == nArgs-1) {
+			std::cerr << "[error] --cipher requires a cipher type argument" << std::endl;
+			processStatus = false;
+			break;
+		}
+		else if ( args[i+1] == "caesar" ) {
+			settings.cipherType = CipherType::Caesar;
+			++i;
+		}
+		else if ( args[i+1] == "playfair" ) {
+			settings.cipherType = CipherType::Playfair;
+			++i;
+		}
+		else {
+			std::cerr << "[error] argument for --cipher must be either 'caesar' or 'playfair' " << std::endl;
+			processStatus = false;
+			break;
+		}
+	}
+	
     else {
       // Have encoutered an unknown flag, output an error message, set the flag
       // to indicate the error and terminate the loop
