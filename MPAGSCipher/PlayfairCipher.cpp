@@ -55,29 +55,85 @@ void PlayfairCipher::setKey( const std::string& key) {
 		}
 	}
 	
-	/*
+	
 	for ( auto elem : char2PairMap_ ) {
-		std::cout << elem.first << " : " << elem.second.first << " : " << elem.second.second << std::endl;
+		std::cout << elem.first << " | " << elem.second.first << " : " << elem.second.second << std::endl;
 	}
-	*/
+	
 }
 
 std::string PlayfairCipher::applyCipher( const std::string& inputText, const CipherMode cipherMode ) const
 {
+	std::string textToCiph = inputText; // Keep input text in case wanted
+	
 	// Change J -> I
+	std::transform(textToCiph.begin(), textToCiph.end(), textToCiph.begin(), [] (char c) { if (c == 'J') return 'I'; else return c;} );
+	std::cout << textToCiph << std::endl;
 	
 	// Find repeated chars and add an X
+	for (auto iter = std::begin(textToCiph); iter != textToCiph.end(); iter+=2) {
+		std::cout << *iter << " : " << *(iter+1) << std::endl;
+		if ( iter == textToCiph.end()-1 ) {
+			if ( *iter == 'Z' ) textToCiph += 'Q'; // Otherwise program breaks if last letter is Z
+			else textToCiph += 'Z';
+		}
+		if ( *iter == *(iter+1) && *iter != 'X') {
+			textToCiph.insert(iter+1, 'X');
+		}
+		else if ( *iter == *(iter+1) && *iter == 'X') {
+			textToCiph.insert(iter+1, 'Q');
+		}
+	}
+
+	std::cout << textToCiph << std::endl;
 	
 	// If the size of input is odd, add a trailing Z
-	
+	//if ( textToCiph.length() %2 != 0 ) {
+	//	textToCiph += 'Z';
+	//}
+	/*
 	// Loop over the input in Digraphs
-	
+	for (auto iter = std::begin(textToCiph) ; iter != textToCiph.end() ; iter+=2) {
+		
 	// 	- Find the coords in the grid for each digraph
-	
+		auto char1 = *iter;
+		auto char1Row = (*char2PairMap_.find(char1)).second.first;
+		auto char1Col = (*char2PairMap_.find(char1)).second.second;
+		
+		auto char2 = *(iter+1);
+		auto char2Row = (*char2PairMap_.find(char2)).second.first;
+		auto char2Col = (*char2PairMap_.find(char2)).second.second;
+		
+		std::cout << "iter: " << *iter << " | position: " << char1Row << " : " << char1Col << std::endl;
+		std::cout << "iter: " << *(iter+1) << " | position: " << char2Row << " : " << char2Col << std::endl;
+		
 	// 	- Apply the rules to these coords to get 'new' coords
+		int shift = (cipherMode == CipherMode::Encrypt) ? 1 : -1;
+		
+		if ( char1Row == char2Row ) {
+			int char1ColNew = ((char1Col + shift) > -1) ? ( (char1Col + shift) % 5 ) : 4;
+			int char2ColNew = ((char2Col + shift) > -1) ? ( (char2Col + shift) % 5 ) : 4;
+			char1 = ( *pair2CharMap_.find( std::make_pair( char1Row, char1ColNew) ) ).second;
+			char2 = ( *pair2CharMap_.find( std::make_pair( char2Row, char2ColNew) ) ).second;	
+		}
 	
+		else if ( char1Col == char2Col ) {
+			int char1RowNew = ((char1Row + shift) > -1) ? ( (char1Row + shift) % 5 ) : 4;
+			int char2RowNew = ((char2Row + shift) > -1) ? ( (char2Row + shift) % 5 ) : 4;
+			char1 = ( *pair2CharMap_.find( std::make_pair( char1RowNew, char1Col ) ) ).second;
+			char2 = ( *pair2CharMap_.find( std::make_pair( char2RowNew, char2Col ) ) ).second;	
+		}
+		
+		else {
+			char1 = ( *pair2CharMap_.find( std::make_pair(char1Row,char2Col) ) ).second;
+			char2 = ( *pair2CharMap_.find( std::make_pair(char2Row,char1Col) ) ).second;
+		}
+		
+		std::cout << char1 << " : " << char2 << std::endl;
 	// 	- Find the letter associated with the new coords
-	
+	std::cout << textToCiph << std::endl;	
+	}*/
+
 	// return the text
 	
 	std::string outputText{inputText};
