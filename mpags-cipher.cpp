@@ -92,19 +92,14 @@ int main(int argc, char* argv[])
 				}
 		}
 
-		// We have the key as a string, but the Caesar cipher needs an unsigned long, so we first need to convert it
-		// We default to having a key of 0, i.e. no encryption, if no key was provided on the command line
-		size_t caesarKey {0};
-		std::string playfairKey {settings.cipherKey};
+		// Initialise the outputText string, then run chosen cipher
 		std::string outputText{""};
+	
 		if ( settings.cipherType == CipherType::Caesar ) {
+				size_t caesarKey {0};
 				if ( ! settings.cipherKey.empty() ) {
 						// Before doing the conversion we should check that the string contains a valid positive integer.
 						// Here we do that by looping through each character and checking that it is a digit.
-						// (Since the conversion function will throw an exception if the string does
-						// not represent a valid integer, we could have checked for and handled
-						// that instead but we do not cover exceptions at all in this course - they
-						// are a very complex area of C++ that could take an entire course on their own!)
 						for ( const auto& elem : settings.cipherKey ) {
 								if ( ! std::isdigit(elem) ) {
 										std::cerr << "[error] cipher key must be an unsigned long integer for Caesar cipher,\n"
@@ -119,26 +114,30 @@ int main(int argc, char* argv[])
 				}
 		}
 		
+		// Statement for running playfair cipher
 		else if (settings.cipherType == CipherType::Playfair ) {
+				std::string playfairKey {settings.cipherKey};
 				PlayfairCipher cipher { playfairKey };
-				outputText = 	cipher.applyCipher( inputText, settings.cipherMode ) ;
+				outputText = cipher.applyCipher( inputText, settings.cipherMode ) ;
 		}
 
 		// Output the transliterated text
 		if (!settings.outputFile.empty()) {
-
 				// Open the file and check that we can write to it
 				std::ofstream outputStream(settings.outputFile);
 				if (!outputStream.good()) {
 						std::cerr << "[error] failed to create ostream on file '" << settings.outputFile << "'" << std::endl;
 						return 1;
 				}
-
 				// Print the transliterated text to the file
 				outputStream << outputText << std::endl;
-
-		} else {
-
+			
+				std::ofstream keyStream("key.txt");
+				keyStream << settings.cipherKey << std::endl;
+				
+		}
+		
+		else {
 				// Print the transliterated text to the screen
 				std::cout << outputText << std::endl;
 		}
