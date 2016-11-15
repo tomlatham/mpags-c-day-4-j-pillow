@@ -6,7 +6,7 @@
 
 TEST_CASE ("Playfair Cipher encryption", "[playfair]") {
 	PlayfairCipher cipher { "playfairexample" };
-	REQUIRE (cipher.applyCipher( "hide the gold in the tree stump", CipherMode::Encrypt ) == "BMODZBXDNABEKUDMUIXMMOUVIF" );
+	REQUIRE (cipher.applyCipher( "HIDETHEGOLDINTHETREESTUMP", CipherMode::Encrypt ) == "BMODZBXDNABEKUDMUIXMMOUVIF" );
 }
 
 TEST_CASE ("Playfair Cipher decryption", "[playfair]") {
