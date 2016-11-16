@@ -70,20 +70,23 @@ std::string PlayfairCipher::applyCipher( const std::string& inputText, const Cip
 	std::transform(textToCiph.begin(), textToCiph.end(), textToCiph.begin(), [] (char c) { if (c == 'J') return 'I'; else return c;} );
 	//std::cout << textToCiph << std::endl;
 	
-	// Find repeated chars and add an X
-	size_t nTextToCiph = textToCiph.length();				// Set length of the text to cipher to a variable
-	for (  size_t i{0} ; i < nTextToCiph ; i+=2 ) { 		// Loop over the text injecting X's next to repeated chars in digraphs with 
-		if ( i == nTextToCiph - 1 ) {						// If at last character of string add Z. Done because only reaches last character if lenght is odd  
-			if (*textToCiph.end() == 'Z') textToCiph +="Q"; // If last char is Z add a Q otherwise it breaks
-			else textToCiph+="Z";							// Else, add a Z
-		}
-		if ( textToCiph[i] == textToCiph[i+1]  && textToCiph[i] != 'X') { // If both chars of digraph are same then insert X between
-			textToCiph.insert(i+1,"X");
-			nTextToCiph = textToCiph.length();
-		}
-		else if ( textToCiph[i] == textToCiph[i+1] && textToCiph[i] == 'X') { // Unless chars are already X then insert Q
-			textToCiph.insert(i+1,"Q");
-			nTextToCiph = textToCiph.length();
+	
+	if (cipherMode == CipherMode::Encrypt) {
+		// Find repeated chars and add an X
+		size_t nTextToCiph = textToCiph.length();				// Set length of the text to cipher to a variable
+		for (  size_t i{0} ; i < nTextToCiph ; i+=2 ) { 		// Loop over the text injecting X's next to repeated chars in digraphs with 
+			if ( i == nTextToCiph - 1 ) {						// If at last character of string add Z. Done because only reaches last character if lenght is odd  
+				if (*textToCiph.end() == 'Z') textToCiph +="Q"; // If last char is Z add a Q otherwise it breaks
+				else textToCiph+="Z";							// Else, add a Z
+			}
+			if ( textToCiph[i] == textToCiph[i+1]  && textToCiph[i] != 'X') { // If both chars of digraph are same then insert X between
+				textToCiph.insert(i+1,"X");
+				nTextToCiph = textToCiph.length();
+			}
+			else if ( textToCiph[i] == textToCiph[i+1] && textToCiph[i] == 'X') { // Unless chars are already X then insert Q
+				textToCiph.insert(i+1,"Q");
+				nTextToCiph = textToCiph.length();
+			}
 		}
 	}
 	
