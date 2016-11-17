@@ -27,20 +27,39 @@ class PlayfairCipher {
      */
     PlayfairCipher( const std::string& key );
 
-	void setKey( const std::string& key );
+    /**
+     * Set the key to be used for the encryption/decryption
+     *
+     * \param key the key to use in the cipher
+     */
+    void setKey( const std::string& key );
 	
-	std::string applyCipher( const std::string& inputText, const CipherMode cipherMode ) const;
-	
-	private:
-	
-	std::string key_ = "";
-	
-	using Char2PairMap = std::map<char, std::pair<int,int>>;
-	Char2PairMap char2PairMap_;
-	
-	using Pair2CharMap = std::map<std::pair<int,int>, char>;
-	Pair2CharMap pair2CharMap_;
-	
+    /**
+     * Apply the cipher to the provided text
+     *
+     * \param inputText the text to encrypt or decrypt
+     * \param cipherMode whether to encrypt or decrypt the input text
+     * \return the result of applying the cipher to the input text
+     */
+    std::string applyCipher( const std::string& inputText, const CipherMode cipherMode ) const;
+
+  private:
+
+    /// The cipher key
+    std::string key_ = "";
+
+    /// Type definition for the lookup table based on character
+    using Char2PairMap = std::map<char, std::pair<int,int>>;
+
+    /// Type definition for the lookup table based on coordinates
+    using Pair2CharMap = std::map<std::pair<int,int>, char>;
+
+    /// Lookup table to go from the character to the coordinates
+    Char2PairMap char2PairMap_;
+
+    /// Lookup table to go from the coordinates to the character
+    Pair2CharMap pair2CharMap_;
+
 };
 
 #endif

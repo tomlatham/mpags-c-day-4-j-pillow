@@ -46,8 +46,8 @@ int main(int argc, char* argv[])
 						<< "                         A null key, i.e. no encryption, is used if not supplied\n\n"
 						<< "  --encrypt              Will use the cipher to encrypt the input text (default behaviour)\n\n"
 						<< "  --decrypt              Will use the cipher to decrypt the input text\n\n"
-			<< "  --cipher <cipherType>  Specifiy the cipher to use\n"
-			<< "                         The arguments can be either caesar or playfair\n\n";
+						<< "  --cipher <cipherType>  Specifiy the cipher to use\n"
+						<< "                         The arguments can be either caesar or playfair\n\n";
 			
 				// Help requires no further action, so return from main,
 				// with 0 used to indicate success
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 
 		// Handle version, if requested
 		if (settings.versionRequested) {
-				std::cout << "0.2.0" << std::endl;
+				std::cout << "0.3.0" << std::endl;
 				// Like help, requires no further action, so return from main,
 				// with 0 used to indicate success
 				return 0;
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 										return 1;
 								}
 						}
-					// Run the Caesar cipher (using the specified key and encrypt/decrypt flag) on the input text
+						// Run the Caesar cipher (using the specified key and encrypt/decrypt flag) on the input text
 						caesarKey = std::stoul(settings.cipherKey);
 						CaesarCipher cipher { caesarKey };
 						outputText = cipher.applyCipher( inputText, settings.cipherMode );

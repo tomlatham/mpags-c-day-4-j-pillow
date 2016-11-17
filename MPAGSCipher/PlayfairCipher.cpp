@@ -38,7 +38,15 @@ void PlayfairCipher::setKey( const std::string& key) {
 	
 	// Remove duplicated letters
 	std::string encChar{""};
-	key_.erase(std::remove_if(key_.begin(),key_.end(), [&encChar] (char c) { std::size_t found = encChar.find(c) ; if ( found!=std::string::npos ) return true; else { encChar += c ; return false; } } ),key_.end());
+	auto detectDuplicates = [&encChar](char c) {
+		if ( encChar.find(c) != std::string::npos ) {
+			return true;
+		} else {
+			encChar += c;
+			return false;
+		}
+	};
+	key_.erase(std::remove_if(key_.begin(),key_.end(), detectDuplicates ),key_.end());
 	//std::cout << key_ << std::endl;	
 	
 	// Store the coords of each letter
@@ -48,8 +56,9 @@ void PlayfairCipher::setKey( const std::string& key) {
 		char2PairMap_[elem] = coord; // Stores cipher key map
 		pair2CharMap_[coord] = elem; // Stores cipher key map
 		
-		if (y < 4) y++;
-		else {
+		if (y < 4) {
+			y++;
+		} else {
 			x++;
 			y = 0;
 		}
@@ -64,7 +73,7 @@ void PlayfairCipher::setKey( const std::string& key) {
 
 std::string PlayfairCipher::applyCipher( const std::string& inputText, const CipherMode cipherMode ) const
 {
-	std::string textToCiph = inputText; // Keep input text in case wanted
+	std::string textToCiph { inputText }; // Keep input text in case wanted
 	
 	// Change J -> I
 	std::transform(textToCiph.begin(), textToCiph.end(), textToCiph.begin(), [] (char c) { if (c == 'J') return 'I'; else return c;} );
@@ -76,10 +85,10 @@ std::string PlayfairCipher::applyCipher( const std::string& inputText, const Cip
 		size_t nTextToCiph = textToCiph.length();				// Set length of the text to cipher to a variable
 		for (  size_t i{0} ; i < nTextToCiph ; i+=2 ) { 		// Loop over the text injecting X's next to repeated chars in digraphs with 
 			if ( i == nTextToCiph - 1 ) {						// If at last character of string add Z. Done because only reaches last character if lenght is odd  
-				if (*textToCiph.end() == 'Z') textToCiph +="Q"; // If last char is Z add a Q otherwise it breaks
+				if (textToCiph[i] == 'Z') textToCiph +="Q"; // If last char is Z add a Q otherwise it breaks
 				else textToCiph+="Z";							// Else, add a Z
 			}
-			if ( textToCiph[i] == textToCiph[i+1]  && textToCiph[i] != 'X') { // If both chars of digraph are same then insert X between
+			else if ( textToCiph[i] == textToCiph[i+1]  && textToCiph[i] != 'X') { // If both chars of digraph are same then insert X between
 				textToCiph.insert(i+1,"X");
 				nTextToCiph = textToCiph.length();
 			}
@@ -91,10 +100,10 @@ std::string PlayfairCipher::applyCipher( const std::string& inputText, const Cip
 	}
 	
 	std::string outputText{""};
-	int shift = (cipherMode == CipherMode::Encrypt) ? 1 : -1; // Use to set positive or negative shift dependent on encrypt or decrypt
+	const int shift = (cipherMode == CipherMode::Encrypt) ? 1 : -1; // Use to set positive or negative shift dependent on encrypt or decrypt
 	
 	// Loop over the input in Digraphs
-	for (auto iter = std::begin(textToCiph) ; iter != textToCiph.end() ; iter+=2) { // Loop over text to cipher with +=2 for digraphs
+	for (auto iter = std::begin(textToCiph) ; iter != std::end(textToCiph) ; iter+=2) { // Loop over text to cipher with +=2 for digraphs
 		
 		// 	- Find the coords in the grid for each digraph
 		auto char1 = *iter;
@@ -112,16 +121,16 @@ std::string PlayfairCipher::applyCipher( const std::string& inputText, const Cip
 			- Find the Letter associated with the new coords */
 		if ( char1Row == char2Row ) {
 			// The next two lines just make sure that if decrypting column 0, then it wraps round as % on a -ve number throws an error
-			int char1ColNew = ((char1Col + shift) > -1) ? ( (char1Col + shift) % 5 ) : 4; 
-			int char2ColNew = ((char2Col + shift) > -1) ? ( (char2Col + shift) % 5 ) : 4;
+			int char1ColNew = (5 + char1Col + shift) % 5; 
+			int char2ColNew = (5 + char2Col + shift) % 5;
 			char1 = ( *pair2CharMap_.find( std::make_pair( char1Row, char1ColNew) ) ).second;
 			char2 = ( *pair2CharMap_.find( std::make_pair( char2Row, char2ColNew) ) ).second;	
 		}
 	
 		else if ( char1Col == char2Col ) {
 			// The next two lines just make sure that if decrypting row 0, then it wraps round as % on a -ve number throws an error
-			int char1RowNew = ((char1Row + shift) > -1) ? ( (char1Row + shift) % 5 ) : 4;
-			int char2RowNew = ((char2Row + shift) > -1) ? ( (char2Row + shift) % 5 ) : 4;
+			int char1RowNew = (5 + char1Row + shift) % 5; 
+			int char2RowNew = (5 + char2Row + shift) % 5;
 			char1 = ( *pair2CharMap_.find( std::make_pair( char1RowNew, char1Col ) ) ).second;
 			char2 = ( *pair2CharMap_.find( std::make_pair( char2RowNew, char2Col ) ) ).second;	
 		}
